@@ -1,0 +1,11 @@
+[KubernetesInstallMaster]
+kmaster1
+kmaster2
+kmaster3
+
+[KubernetesInstallNodes]
+kworking1
+kworking2
+kworking3
+
+

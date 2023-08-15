@@ -1,0 +1,4 @@
+
+ansible-playbook -i inventory push_image.yaml -u antonio -K --extra-vars "name=show_kubernetes_var_env tag=0.0.2-SNAPSHOT"
+
+"ssh antonio@{{inventory_hostname}} 'docker load -i /home/antonio/{{image_name}}.tar'"

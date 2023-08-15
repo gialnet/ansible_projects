@@ -1,0 +1,46 @@
+---
+- name: install cockroachDB Red Hat 8.4
+  hosts: cockroachDB
+  remote_user: root
+  
+  tasks:
+  - name: install chrony NTP Server
+    ansible.builtin.template:
+      src: chrony.conf
+      dest: /etc/chrony.conf
+
+
+  - name: Restart chrony NTP Server 
+    ansible.builtin.service: 
+      name: chronyd 
+      enabled: yes
+      state: restarted
+
+
+  - name: Unarchive a file that needs to be downloaded (added in 2.0)
+    ansible.builtin.unarchive:
+      src: https://binaries.cockroachdb.com/cockroach-v21.1.8.linux-amd64.tgz
+      dest: ~/
+      remote_src: yes
+
+  - name: Copy binary to /usr/local/bin
+    ansible.builtin.copy:
+      src: /root/cockroach-v21.1.8.linux-amd64/cockroach
+      dest: /usr/local/bin/
+      remote_src: yes
+
+  - name: Create the directory where the external libraries will be stored
+    ansible.builtin.file:
+      path: /usr/local/lib/cockroach
+      state: directory
+
+
+  - name: Copy the external libraries to the directory
+    ansible.builtin.copy:
+      remote_src: yes
+      src: /root/cockroach-v21.1.8.linux-amd64/lib/
+      dest: /usr/local/lib/cockroach/  # This is the directory where the external libraries will be stored
+      mode: preserve
+      
+
+    

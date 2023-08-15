@@ -1,0 +1,20 @@
+---
+ - name: test.yaml
+   gather_facts: yes
+   hosts: ElasticsearchRedHat
+   vars: 
+     hostnameip: "{{inventory_hostname}}"
+
+   tasks:
+   - name: What is my inventory_hostname?
+     debug: "{{inventory_hostname}}"
+
+   - name: What is my ansible_hostname?
+     debug: "{{hostnameip}}"
+
+   - name: Select config file by node name
+     ansible.builtin.template:
+      src: elastic-{{inventory_hostname}}.conf
+      dest: /usr/local/elastic/elasticsearch-7.14.1/config/elasticsearch.yml
+      owner: weblrtd
+      group: weblrtd

@@ -1,0 +1,60 @@
+---
+- name: Install Oracle WebLogic Server
+  hosts: weblogic_servers
+  become: yes  # To elevate privileges as needed
+  vars:
+    weblogic_version: "Oracle WebLogic Server 12.2.1.3"
+
+  tasks:
+
+    # **************************************************
+
+    - name: Create oinstall group
+      group:
+        name: oinstall
+        gid: 54321
+
+    - name: Create oracle user
+      user:
+        name: oracle
+        uid: 54321
+        group: oinstall
+
+    - name: Set password for oracle user
+      shell: echo "oracle_password" | passwd --stdin oracle
+
+# **************************************************
+    - name: Create installation directory
+      file:
+        path: /u01/app/oracle/product/12.2.1
+        state: directory
+
+    - name: create domain folder
+      file:
+        path: /u01/app/oracle/config/domains
+        state: /directory
+
+    - name: application folder
+      file:
+        path: /u01/app/oracle/config/applications
+        state: directory
+
+    - name: Change ownership to oracle:oinstall
+      command: chown -R oracle:oinstall /u01
+
+    - name: Change permissions to 775
+      command: chmod -R 775 /u01/
+
+
+    - name: Copy WebLogic installation files (upload files to the server)
+      copy:
+        src: /path/to/weblogic/installer
+        dest: /opt/weblogic/
+        remote_src: yes
+
+    - name: Execute WebLogic installation
+      shell: |
+        cd /opt/weblogic
+        java -jar wlsinstaller.jar -silent -responseFile /opt/weblogic/response-file.txt
+      args:
+        executable: /bin/bash

@@ -1,0 +1,40 @@
+---
+- name: Elastisearch 1.14.1 playbook install Red Hat 8.4
+  hosts: ElasticsearchRedHat
+  remote_user: root
+  vars:
+    package_name: elasticsearch
+    package_version: 1.14.1
+    
+
+  tasks:
+  - name: Copy binary to /usr/local/elastic
+    ansible.builtin.copy:
+      src: elasticsearch-7.14.1-linux-x86_64.tar.gz
+      dest: /usr/local/elastic
+      owner: weblrtd
+      group: weblrtd
+
+  - name: Extract binary
+    ansible.builtin.unarchive:
+      src: /usr/local/elastic/elasticsearch-7.14.1-linux-x86_64.tar.gz
+      dest: /usr/local/elastic
+      owner: weblrtd
+      group: weblrtd
+      remote_src: yes
+
+  - name: Var environtment variables
+    ansible.builtin.template:
+      src: elastic.sh
+      dest: /etc/profile.d/elastic.sh
+      owner: root
+      group: root
+
+  - name: Select config file by node name
+    ansible.builtin.template:
+      src: elastic-{{inventory_hostname}}.conf
+      dest: /usr/local/elastic/elasticsearch-7.14.1/config/elasticsearch.yml
+      owner: weblrtd
+      group: weblrtd
+
+  

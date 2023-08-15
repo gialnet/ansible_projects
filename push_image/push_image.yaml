@@ -1,0 +1,23 @@
+---
+ - name: push_image.yaml
+   hosts: localhost
+   gather_facts: no
+   vars:
+      image_name: "{{ name }}"
+      image_tag: "{{ tag }}"
+   
+   
+   tasks:
+    - name: "copy image from docker to tar"
+      docker_image:
+        name: "{{image_name}}:{{image_tag}}"
+        archive_path: /home/antonio/{{image_name}}.tar
+        source: pull
+        state: present
+
+    - name: fetch archived image
+      fetch:
+        src: /root/democontainer_v1_0.tar
+        dest: ./democontainer_v1_0.tar
+        flat: true
+       
