@@ -1,0 +1,29 @@
+---
+- name: Append environment variables to .bashrc
+  hosts: WeblogicServers
+  remote_user: root
+
+  tasks:
+  
+    - name: Create alias file
+      file:
+        path: /home/wl12/.bashrc
+        state: touch
+        mode: u=rw,g=r,o=r
+        owner: wl12
+        group: oinstall
+  
+    - name: Append environment variables to .bashrc
+      blockinfile:
+        path: /home/wl12/.bashrc
+        block: |
+          # Adjust paths as required.
+          export ORACLE_BASE=/u01/app/oracle
+          export ORACLE_HOME=$ORACLE_BASE/product/12.2.1
+          export MW_HOME=$ORACLE_HOME
+          export WLS_HOME=$MW_HOME/wlserver
+          export WL_HOME=$WLS_HOME
+          export DOMAIN_BASE=$ORACLE_BASE/config/domains
+          export DOMAIN_HOME=$DOMAIN_BASE/mydomain
+          export JAVA_HOME=/u01/app/oracle/jdk1.8.0_361
+          export PATH=$JAVA_HOME/bin:$PATH

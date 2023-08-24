@@ -1,0 +1,80 @@
+---
+- name: Create Oracle user
+  hosts: WeblogicServers
+  remote_user: root
+
+
+  tasks:
+
+    # **************************************************
+
+    #- name: Create oinstall group
+    #  group:
+    #    name: oinstall
+    #    gid: 54321
+
+    - name: Create oracle user
+      user:
+        name: wl14
+        shell: /bin/bash
+       # uid: 54321
+        group: oinstall
+
+# **************************************************
+    - name: Create installation directory
+      file:
+        path: /u02/app/oracle/product/14.1.1
+        state: directory
+
+    - name: create domain folder
+      file:
+        path: /u02/app/oracle/config/domains
+        state: directory
+
+    - name: application folder
+      file:
+        path: /u02/app/oracle/config/applications
+        state: directory
+
+    - name: Change ownership to wl14:oinstall
+      command: chown -R wl14:oinstall /u01
+
+    - name: Change permissions to 775
+      command: chmod -R 775 /u02/
+
+    - name: Copy JDK binary to /u02/app/oracle/
+      ansible.builtin.copy:
+        src: jdk-11.0.19_linux-x64_bin.tar.gz
+        dest: /u02/app/oracle/
+        owner: wl14
+        group: oinstall
+
+    - name: Extract binary
+      ansible.builtin.unarchive:
+        src: /u02/app/oracle/jdk-11.0.19_linux-x64_bin.tar.gz
+        dest: /u02/app/oracle/
+        owner: wl14
+        group: oinstall
+        remote_src: yes
+
+    - name: Change ownership to oracle:oinstall
+      command: chown -R wl14:oinstall /u02/app/oracle/
+
+    - name: Change permissions to 775
+      command: chmod -R 775 /u02/app/oracle/
+      
+    - name: Copy Install file to /u02/app/oracle/
+      ansible.builtin.copy:
+        src: fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip
+        dest: /u02/app/oracle/
+        owner: wl14
+        group: oinstall
+
+    - name: Extract binary
+      ansible.builtin.unarchive:
+        src: /u02/app/oracle/fmw_14.1.1.0.0_wls_lite_Disk1_1of1.zip
+        dest: /u02/app/oracle/
+        owner: wl14
+        group: oinstall
+        remote_src: yes
+  
